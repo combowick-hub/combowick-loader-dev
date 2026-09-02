@@ -118,14 +118,11 @@ M.looksTampered = looksTampered
 M.stillTrusted  = stillTrusted
 M.safeToLoad    = safeToLoad
 
-local Core, VaultModule, execPremiumScript
-pcall(function()
-    Core = loadstring(game:HttpGet("https://raw.githubusercontent.com/checkurasshole/MainModule/refs/heads/main/MainModulev2"))()
-    if type(Core) == "table" then
-        VaultModule       = Core.VaultModule
-        execPremiumScript = Core.execPremiumScript
-    end
-end)
+-- [DEV] Vault Core DISABLED. The old Vault (checkurasshole/MainModule) auto-ran the
+-- premium/chronicle script (e.g. INK) for whitelisted HWIDs on load — hijacking the
+-- new flow in every game. The new system uses validateKeyNew + the selector instead,
+-- so we don't load the Vault at all here.
+local Core, VaultModule, execPremiumScript = nil, nil, nil
 M.Core              = Core
 M.VaultModule       = VaultModule
 M.execPremiumScript = execPremiumScript
