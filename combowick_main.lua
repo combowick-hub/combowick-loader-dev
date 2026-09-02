@@ -29,9 +29,9 @@ end
 
 M.queueOnTeleport()
 
-if M.tryVaultWhitelist() then return end
--- NEW: if a saved key still validates for this game, load its scripts (auto-run 1,
--- picker for 2+) and skip the free-session flow entirely. Returning key users.
+-- [DEV] Vault whitelist path removed (it auto-loaded INK in every game). Straight to
+-- the new key path: if a saved key still validates for this game, load its scripts
+-- (auto-run 1, picker for 2+) and skip the free-session flow. Returning key users.
 if M.tryNewKey() then return end
 
 local preCheck = M.withRetry(M.checkSession, M.hwid)
@@ -112,11 +112,7 @@ local timerLabel  = StatusGroup:AddLabel("", true)
 local hintLabel   = StatusGroup:AddLabel("", true)
 
 
-local savedKey = ""
-if VaultModule and VaultModule.loadKey then
-    local ok, k = pcall(VaultModule.loadKey)
-    if ok and type(k) == "string" then savedKey = k end
-end
+local savedKey = M.loadSavedKey()
 local keyInputValue = savedKey
 
 local KeyGroup = Tabs.Key:AddLeftGroupbox("Enter Your Key")
