@@ -136,14 +136,11 @@ M.looksTampered = looksTampered
 M.stillTrusted  = stillTrusted
 M.safeToLoad    = safeToLoad
 
-local Core, VaultModule, execPremiumScript
-pcall(function()
-    Core = loadstring(game:HttpGet("https://raw.githubusercontent.com/checkurasshole/MainModule/refs/heads/main/MainModulev2"))()
-    if type(Core) == "table" then
-        VaultModule       = Core.VaultModule
-        execPremiumScript = Core.execPremiumScript
-    end
-end)
+-- [DEV] Vault Core DISABLED. The old Vault (checkurasshole/MainModule) auto-ran the
+-- premium/chronicle script (e.g. INK) for whitelisted HWIDs on load — hijacking the
+-- new flow in every game. The new system uses validateKeyNew + the selector instead,
+-- so we don't load the Vault at all here.
+local Core, VaultModule, execPremiumScript = nil, nil, nil
 M.Core              = Core
 M.VaultModule       = VaultModule
 M.execPremiumScript = execPremiumScript
@@ -530,9 +527,9 @@ if not M then warn("[COMBOWICK] module failed to init"); return end
 
 M.queueOnTeleport()
 
-if M.tryVaultWhitelist() then return end
--- NEW: if a saved key still validates for this game, load its scripts (auto-run 1,
--- picker for 2+) and skip the free-session flow entirely. Returning key users.
+-- [DEV] Vault whitelist path removed (it auto-loaded INK in every game). Straight to
+-- the new key path: if a saved key still validates for this game, load its scripts
+-- (auto-run 1, picker for 2+) and skip the free-session flow. Returning key users.
 if M.tryNewKey() then return end
 
 local preCheck = M.withRetry(M.checkSession, M.hwid)
@@ -613,11 +610,7 @@ local timerLabel  = StatusGroup:AddLabel("", true)
 local hintLabel   = StatusGroup:AddLabel("", true)
 
 
-local savedKey = ""
-if VaultModule and VaultModule.loadKey then
-    local ok, k = pcall(VaultModule.loadKey)
-    if ok and type(k) == "string" then savedKey = k end
-end
+local savedKey = M.loadSavedKey()
 local keyInputValue = savedKey
 
 local KeyGroup = Tabs.Key:AddLeftGroupbox("Enter Your Key")
